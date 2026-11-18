@@ -1,0 +1,21 @@
+[Unit]
+Description=Stanok real vaqt monitori (SBY-850x6G)
+After=network-online.target
+Wants=network-online.target
+# cheksiz qayta urinish (hech qachon "failed" bo'lib to'xtab qolmasin)
+StartLimitIntervalSec=0
+
+[Service]
+Type=notify
+NotifyAccess=all
+ExecStart=/usr/bin/python3 -I %h/stanok_web.py
+Restart=always
+RestartSec=5
+# 3 daqiqa "tirikman" xabari kelmasa (qotib qolsa) -- o'ldirib qayta ishga tushiriladi
+WatchdogSec=180
+TimeoutStartSec=60
+StandardOutput=append:%h/stanok_web.log
+StandardError=append:%h/stanok_web.log
+
+[Install]
+WantedBy=default.target

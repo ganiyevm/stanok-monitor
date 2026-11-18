@@ -1,0 +1,364 @@
+{
+ "looms": [
+  {
+   "id": 1,
+   "name": "1-stanok",
+   "source": "monitor",
+   "url": "http://127.0.0.1:8080",
+   "panel_port": 8080,
+   "enabled": true,
+   "note": "stanok_web.py orqali o'qiladi (DR134 192.168.0.7). Registrlar tasdiqlangan."
+  },
+  {
+   "id": 2,
+   "name": "2-stanok",
+   "source": "modbus",
+   "host": "10.10.1.102",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 3,
+   "name": "3-stanok",
+   "source": "modbus",
+   "host": "10.10.1.103",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 4,
+   "name": "4-stanok",
+   "source": "modbus",
+   "host": "10.10.1.104",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 5,
+   "name": "5-stanok",
+   "source": "modbus",
+   "host": "10.10.1.105",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 6,
+   "name": "6-stanok",
+   "source": "modbus",
+   "host": "10.10.1.106",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 7,
+   "name": "7-stanok",
+   "source": "modbus",
+   "host": "10.10.1.107",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 8,
+   "name": "8-stanok",
+   "source": "modbus",
+   "host": "10.10.1.108",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 9,
+   "name": "9-stanok",
+   "source": "modbus",
+   "host": "10.10.1.109",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 10,
+   "name": "10-stanok",
+   "source": "modbus",
+   "host": "10.10.1.110",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 11,
+   "name": "11-stanok",
+   "source": "modbus",
+   "host": "10.10.1.111",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 12,
+   "name": "12-stanok",
+   "source": "modbus",
+   "host": "10.10.1.112",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 13,
+   "name": "13-stanok",
+   "source": "modbus",
+   "host": "10.10.1.113",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 14,
+   "name": "14-stanok",
+   "source": "modbus",
+   "host": "10.10.1.114",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 15,
+   "name": "15-stanok",
+   "source": "modbus",
+   "host": "10.10.1.115",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 16,
+   "name": "16-stanok",
+   "source": "modbus",
+   "host": "10.10.1.116",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 17,
+   "name": "17-stanok",
+   "source": "modbus",
+   "host": "10.10.1.117",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 18,
+   "name": "18-stanok",
+   "source": "modbus",
+   "host": "10.10.1.118",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 19,
+   "name": "19-stanok",
+   "source": "modbus",
+   "host": "10.10.1.119",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 20,
+   "name": "20-stanok",
+   "source": "modbus",
+   "host": "10.10.1.120",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 21,
+   "name": "21-stanok",
+   "source": "modbus",
+   "host": "10.10.1.121",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 22,
+   "name": "22-stanok",
+   "source": "modbus",
+   "host": "10.10.1.122",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 23,
+   "name": "23-stanok",
+   "source": "modbus",
+   "host": "10.10.1.123",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 24,
+   "name": "24-stanok",
+   "source": "modbus",
+   "host": "10.10.1.124",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 25,
+   "name": "25-stanok",
+   "source": "modbus",
+   "host": "10.10.1.125",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 26,
+   "name": "26-stanok",
+   "source": "modbus",
+   "host": "10.10.1.126",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 27,
+   "name": "27-stanok",
+   "source": "modbus",
+   "host": "10.10.1.127",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 28,
+   "name": "28-stanok",
+   "source": "modbus",
+   "host": "10.10.1.128",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 29,
+   "name": "29-stanok",
+   "source": "modbus",
+   "host": "10.10.1.129",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 30,
+   "name": "30-stanok",
+   "source": "modbus",
+   "host": "10.10.1.130",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 31,
+   "name": "31-stanok",
+   "source": "modbus",
+   "host": "10.10.1.131",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 32,
+   "name": "32-stanok",
+   "source": "modbus",
+   "host": "10.10.1.132",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 33,
+   "name": "33-stanok",
+   "source": "modbus",
+   "host": "10.10.1.133",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 34,
+   "name": "34-stanok",
+   "source": "modbus",
+   "host": "10.10.1.134",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 35,
+   "name": "35-stanok",
+   "source": "modbus",
+   "host": "10.10.1.135",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 36,
+   "name": "36-stanok",
+   "source": "modbus",
+   "host": "10.10.1.136",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 37,
+   "name": "37-stanok",
+   "source": "modbus",
+   "host": "10.10.1.137",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 38,
+   "name": "38-stanok",
+   "source": "modbus",
+   "host": "10.10.1.138",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 39,
+   "name": "39-stanok",
+   "source": "modbus",
+   "host": "10.10.1.139",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  },
+  {
+   "id": 40,
+   "name": "40-stanok",
+   "source": "modbus",
+   "host": "10.10.1.140",
+   "port": 8234,
+   "station": 1,
+   "enabled": false
+  }
+ ]
+}

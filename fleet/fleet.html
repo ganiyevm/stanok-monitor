@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sex monitori</title>
+<style>
+:root{
+  --bg:#f3f4f6; --surface:#fff; --surface2:#f8fafc; --border:#e2e8f0;
+  --text:#0f172a; --text2:#475569; --text3:#94a3b8;
+  --run:#15803d; --runbg:#dcfce7; --stop:#b91c1c; --stopbg:#fee2e2; --stopfill:#dc2626;
+  --warn:#b45309; --warnbg:#fef3c7; --off:#64748b; --offbg:#e2e8f0; --brand:#1d4ed8;
+  --shadow:0 1px 2px rgba(15,23,42,.06),0 1px 3px rgba(15,23,42,.08);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0b1120; --surface:#111827; --surface2:#1e293b; --border:#273449;
+    --text:#f1f5f9; --text2:#cbd5e1; --text3:#64748b;
+    --run:#4ade80; --runbg:#052e1a; --stop:#fca5a5; --stopbg:#3b0d0d; --stopfill:#b91c1c;
+    --warn:#fbbf24; --warnbg:#3a2a05; --off:#94a3b8; --offbg:#1e293b; --brand:#60a5fa;
+    --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:16px;padding:10px 20px;flex-wrap:wrap}
+header h1{font-size:19px;margin:0;font-weight:700}
+.tabs{display:flex;gap:4px;background:var(--surface2);padding:3px;border-radius:10px}
+.tabs button{border:0;background:none;color:var(--text2);font:inherit;font-weight:600;padding:6px 14px;border-radius:8px;cursor:pointer}
+.tabs button.on{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+.grow{flex:1}
+.clock{font-variant-numeric:tabular-nums;color:var(--text2);font-weight:600}
+.conn{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text2)}
+.conn i{width:9px;height:9px;border-radius:50%;background:var(--run)}
+.conn.bad i{background:var(--stopfill)}
+main{padding:16px 20px 40px;max-width:1900px;margin:0 auto}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow)}
+.kpi .l{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em}
+.kpi .v{font-size:28px;font-weight:750;font-variant-numeric:tabular-nums;margin-top:2px}
+.kpi .v small{font-size:14px;font-weight:600;color:var(--text2)}
+.kpi.run .v{color:var(--run)} .kpi.stop .v{color:var(--stop)} .kpi.off .v{color:var(--off)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.chip{border:1px solid var(--border);background:var(--surface);color:var(--text2);font:inherit;font-weight:600;
+  padding:6px 12px;border-radius:999px;cursor:pointer}
+.chip.on{background:var(--text);color:var(--surface);border-color:var(--text)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:10px}
+.tile{position:relative;background:var(--surface);border:1px solid var(--border);border-left:6px solid var(--off);
+  border-radius:12px;padding:10px 12px;cursor:pointer;min-height:118px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:var(--shadow);text-align:left;font:inherit;color:inherit}
+.tile:hover{outline:2px solid var(--brand);outline-offset:1px}
+.tile .top{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.tile .num{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
+.pill{font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:999px;white-space:nowrap}
+.tile .main{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
+.tile .main small{font-size:12px;color:var(--text2);font-weight:600}
+.tile .sub{font-size:12.5px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.tile .foot{margin-top:auto;font-size:12px;color:var(--text3);display:flex;justify-content:space-between;gap:6px}
+.s-run{border-left-color:var(--run)} .s-run .pill{background:var(--runbg);color:var(--run)}
+.s-warn{border-left-color:var(--warn)} .s-warn .pill{background:var(--warnbg);color:var(--warn)}
+.s-stop{border-left-color:var(--stopfill);background:var(--stopbg)} .s-stop .pill{background:var(--stopfill);color:#fff}
+.s-stop .main{color:var(--stop);font-size:14.5px}
+.s-offline .pill{background:var(--offbg);color:var(--off)} .s-offline .num{color:var(--off)}
+.s-disabled{border-style:dashed;border-left-width:1px;box-shadow:none;background:transparent;cursor:default;min-height:118px}
+.s-disabled .num{color:var(--text3)} .s-disabled .pill{background:transparent;color:var(--text3);border:1px dashed var(--border)}
+.s-disabled:hover{outline:none}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--text2);margin-top:14px}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;background:var(--c)}
+/* modal */
+.back{position:fixed;inset:0;background:rgba(2,6,23,.55);display:none;align-items:flex-start;justify-content:center;z-index:10;padding:24px 12px;overflow:auto}
+.back.on{display:flex}
+.modal{background:var(--surface);border-radius:16px;width:min(880px,100%);padding:18px 20px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.mh{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.mh h2{margin:0;font-size:22px}
+.x{margin-left:auto;border:0;background:var(--surface2);color:var(--text);font-size:20px;width:36px;height:36px;border-radius:10px;cursor:pointer}
+.banner{border-radius:12px;padding:12px 14px;font-weight:650;margin-bottom:12px}
+.banner.stop{background:var(--stopbg);color:var(--stop)} .banner.run{background:var(--runbg);color:var(--run)}
+.banner.warn{background:var(--warnbg);color:var(--warn)} .banner.offline,.banner.disabled{background:var(--offbg);color:var(--off)}
+.params{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-bottom:12px}
+.param{background:var(--surface2);border-radius:10px;padding:8px 10px}
+.param .l{font-size:12px;color:var(--text2)} .param .v{font-size:19px;font-weight:700;font-variant-numeric:tabular-nums}
+.param .v small{font-size:12px;color:var(--text2);font-weight:600}
+h3{font-size:14px;margin:14px 0 6px;color:var(--text2);text-transform:uppercase;letter-spacing:.04em}
+.chart{width:100%;height:120px;background:var(--surface2);border-radius:10px}
+.ev{list-style:none;margin:0;padding:0;max-height:220px;overflow:auto;border:1px solid var(--border);border-radius:10px}
+.ev li{display:flex;gap:10px;padding:7px 10px;border-bottom:1px solid var(--border);font-size:13.5px}
+.ev li:last-child{border-bottom:0}
+.ev time{color:var(--text3);font-variant-numeric:tabular-nums;white-space:nowrap}
+.ev .k-stop,.ev .k-reason{color:var(--stop);font-weight:600} .ev .k-start{color:var(--run);font-weight:600}
+.ev .k-bypass{color:var(--warn);font-weight:600} .ev .k-link{color:var(--off)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);
+  font:inherit;font-weight:600;padding:8px 14px;border-radius:10px;cursor:pointer;text-decoration:none}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.muted{color:var(--text3);font-size:13px}
+/* hisobot */
+.rbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.rbar input{font:inherit;padding:7px 10px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text)}
+.tablewrap{overflow:auto;background:var(--surface);border:1px solid var(--border);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{padding:8px 12px;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-size:12.5px;color:var(--text2);background:var(--surface2);cursor:pointer;user-select:none;position:sticky;top:0}
+tfoot td{font-weight:750;background:var(--surface2)}
+.bad{color:var(--stop);font-weight:700} .good{color:var(--run);font-weight:700}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-top:14px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px}
+.bar{height:8px;border-radius:4px;background:var(--stopfill);margin-top:3px}
+.shiftchip{font-size:13px;font-weight:650;color:var(--text2);background:var(--surface2);padding:5px 10px;border-radius:999px}
+.adm{max-width:720px}
+.adm .card{margin-bottom:14px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.adm input{font:inherit;padding:9px 11px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);min-height:44px}
+.adm input.nm{flex:1;min-width:140px}
+.adm .end{color:var(--text2);font-size:14px;min-width:120px}
+.msg{margin-top:8px;font-weight:600}.msg.err{color:var(--stop)}.msg.ok{color:var(--run)}
+.btn.small{padding:6px 10px;min-height:36px}
+@media (max-width:560px){
+  header{padding:8px 16px} main{padding:12px 16px 32px}
+  .grid{grid-template-columns:repeat(2,1fr)} .kpi .v{font-size:22px}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Sex monitori</h1>
+  <div class="tabs"><button data-tab="sex" class="on">Sex</button><button data-tab="rep">Hisobot</button><button data-tab="adm" id="tab-adm">Sozlamalar</button></div>
+  <div class="grow"></div>
+  <div class="shiftchip" id="shiftchip" hidden></div>
+  <div class="conn" id="conn"><i></i><span>Ulangan</span></div>
+  <div class="clock" id="clock">--:--</div>
+</header>
+
+<main>
+<section id="sex">
+  <div class="kpis">
+    <div class="kpi run"><div class="l">Ishlayapti</div><div class="v" id="k-run">–</div></div>
+    <div class="kpi stop"><div class="l">To'xtagan</div><div class="v" id="k-stop">–</div></div>
+    <div class="kpi off"><div class="l">Aloqa yo'q</div><div class="v" id="k-off">–</div></div>
+    <div class="kpi"><div class="l">Hozirgi tezlik</div><div class="v" id="k-mh">–</div></div>
+    <div class="kpi"><div class="l" id="k-today-l">Bugun to'qildi</div><div class="v" id="k-today">–</div></div>
+    <div class="kpi"><div class="l">O'rt. samaradorlik</div><div class="v" id="k-eff">–</div></div>
+  </div>
+  <div class="filters" id="filters">
+    <button class="chip on" data-f="all">Hammasi</button>
+    <button class="chip" data-f="stop">To'xtaganlar</button>
+    <button class="chip" data-f="run">Ishlayotganlar</button>
+    <button class="chip" data-f="offline">Aloqa yo'q</button>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="legend">
+    <span style="--c:var(--run)">Ishlayapti</span>
+    <span style="--c:var(--stopfill)">To'xtagan</span>
+    <span style="--c:var(--warn)">Ishlayapti, himoya o'chiq</span>
+    <span style="--c:var(--off)">Aloqa yo'q</span>
+    <span style="--c:transparent;">Punktir chiziq: hali ulanmagan</span>
+  </div>
+</section>
+
+<section id="rep" hidden>
+  <div class="rbar">
+    <label>Sana: <input type="date" id="rdate"></label>
+    <button class="btn" id="rprev">‹ Oldingi kun</button>
+    <button class="btn" id="rnext">Keyingi kun ›</button>
+    <div class="grow"></div>
+    <a class="btn primary" id="rcsv" href="#">Excel'ga yuklab olish (CSV)</a>
+  </div>
+  <div class="muted" id="rwin" style="margin:-4px 0 10px"></div>
+  <div class="kpis" id="rkpis"></div>
+  <div class="kpis" id="rshifts"></div>
+  <div class="tablewrap"><table id="rtable"></table></div>
+  <div class="cols">
+    <div class="card"><h3 style="margin-top:0">To'xtash sabablari</h3><div id="rreasons"></div></div>
+    <div class="card"><h3 style="margin-top:0">Eslatma</h3>
+      <div class="muted">Ishlab chiqarish kuni birinchi smena boshlanganidan 24 soat; tungi smena boshlangan kunga
+      yoziladi. Rejali vaqt = shu oraliq (stanok monitoringga ulangandan beri, hozirgacha). Stanokdan ma'lumot
+      kelmagan daqiqalar <b>"Aloqa yo'q / elektr"</b> ustunida: odatda elektr o'chishi yoki tarmoq uzilishi.
+      Ular yo'qotish sifatida ishlash ulushini kamaytiradi. To'xtash sabablari "?" belgisi bilan: PLK bitlari
+      bo'yicha aniqlangan, hali to'liq tasdiqlanmagan.</div></div>
+  </div>
+</section>
+<section id="adm" hidden class="adm">
+  <div id="adm-body"><div class="muted">Yuklanmoqda…</div></div>
+</section>
+</main>
+
+<div class="back" id="back"><div class="modal" id="modal"></div></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt = (v, d = 0) => v == null ? "–" : Number(v).toLocaleString("ru-RU", {minimumFractionDigits: d, maximumFractionDigits: d});
+const STAT = {run: "Ishlayapti", warn: "Himoya o'chiq", stop: "To'xtagan", offline: "Aloqa yo'q", disabled: "Ulanmagan"};
+let fleet = null, filter = "all", openId = null, skew = 0;
+
+function dur(since) {
+  const s = Math.max(0, (Date.now() / 1000 - skew) - since);
+  if (s < 60) return Math.round(s) + " s";
+  if (s < 3600) return Math.floor(s / 60) + " daq";
+  const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60);
+  return h < 48 ? `${h} soat ${m} daq` : Math.floor(h / 24) + " kun";
+}
+const pad = n => String(n).padStart(2, "0");
+const num2 = id => pad(id);
+
+function tileHTML(l) {
+  let main = "", sub = "", foot = "";
+  if (l.status === "run" || l.status === "warn") {
+    main = `${fmt(l.m_hour, 1)} <small>m/soat</small>`;
+    sub = l.status === "warn" ? "Himoya o'chiq: " + esc((l.bypass || []).join(", ")) : (l.hz != null ? `${fmt(l.hz, 0)} Hz` : "");
+    foot = `<span>Smena ${fmt(l.shift_m, 1)} m</span><span>${l.eff != null ? fmt(l.eff, 1) + "%" : ""}</span>`;
+  } else if (l.status === "stop") {
+    main = esc(l.reason || "Sababi aniqlanmadi");
+    foot = `<span>${dur(l.since)} dan beri</span><span>Smena ${fmt(l.shift_m, 1)} m</span>`;
+  } else if (l.status === "offline") {
+    main = "Ma'lumot kelmayapti";
+    sub = "Elektr o'chgan yoki tarmoq uzilgan bo'lishi mumkin";
+    foot = `<span>${dur(l.since)} dan beri</span>`;
+  } else {
+    sub = "Shlyuz o'rnatilmagan";
+  }
+  const tag = l.status === "disabled" ? "div" : "button";
+  return `<${tag} class="tile s-${l.status}" data-id="${l.id}" aria-label="${esc(l.name)}: ${STAT[l.status]}">
+    <div class="top"><span class="num">${num2(l.id)}</span><span class="pill">${STAT[l.status]}</span></div>
+    ${main ? `<div class="main">${main}</div>` : ""}${sub ? `<div class="sub">${sub}</div>` : ""}
+    <div class="foot">${foot}</div></${tag}>`;
+}
+
+function render() {
+  if (!fleet) return;
+  const c = fleet.counts;
+  $("#k-run").textContent = c.run + c.warn;
+  $("#k-stop").textContent = c.stop;
+  $("#k-off").textContent = c.offline;
+  $("#k-mh").innerHTML = `${fmt(fleet.m_hour, 1)} <small>m/soat</small>`;
+  $("#k-today").innerHTML = `${fmt(fleet.today_m, 0)} <small>m</small>`;
+  if (fleet.shift) { const sc = $("#shiftchip"); sc.hidden = false; sc.textContent = `Hozir: ${fleet.shift.name} · ${fleet.shift.start}–${fleet.shift.end}`; }
+  $("#tab-adm").hidden = !!fleet.remote;
+  if (!rdateSet && fleet.prod_day) { $("#rdate").value = fleet.prod_day; rdateSet = true; }
+  $("#k-eff").innerHTML = fleet.eff_avg == null ? "–" : `${fmt(fleet.eff_avg, 1)} <small>%</small>`;
+  const show = l => filter === "all" || (filter === "run" ? (l.status === "run" || l.status === "warn") : l.status === filter);
+  const list = fleet.looms.filter(show);
+  $("#grid").innerHTML = list.length ? list.map(tileHTML).join("") : `<div class="muted">Bu turdagi stanok yo'q.</div>`;
+}
+
+async function loadFleet() {
+  try {
+    const r = await fetch("api/fleet", {cache: "no-store"});
+    if (!r.ok) throw 0;
+    fleet = await r.json();
+    skew = Date.now() / 1000 - fleet.now;
+    setConn(true); render();
+  } catch (e) { setConn(false); }
+}
+function setConn(ok) {
+  $("#conn").classList.toggle("bad", !ok);
+  $("#conn span").textContent = ok ? "Ulangan" : "Server bilan aloqa yo'q";
+}
+setInterval(() => { const d = new Date(); $("#clock").textContent = `${pad(d.getHours())}:${pad(d.getMinutes())}`; }, 1000);
+
+$("#filters").addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  filter = b.dataset.f;
+  document.querySelectorAll(".chip").forEach(x => x.classList.toggle("on", x === b));
+  render();
+});
+
+/* ---------- batafsil oyna ---------- */
+$("#grid").addEventListener("click", e => {
+  const t = e.target.closest("button.tile"); if (!t) return;
+  openId = +t.dataset.id; $("#back").classList.add("on"); $("#modal").innerHTML = `<div class="muted">Yuklanmoqda…</div>`;
+  loadDetail();
+});
+function closeModal() { openId = null; $("#back").classList.remove("on"); }
+$("#back").addEventListener("click", e => { if (e.target.id === "back" || e.target.closest(".x")) closeModal(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+
+function chartSVG(pts) {
+  const W = 800, H = 120, now = Date.now() / 1000 - skew;
+  if (!pts.length) return `<div class="muted" style="padding:12px">Grafik uchun ma'lumot hali yig'ilmadi.</div>`;
+  const max = Math.max(1, ...pts.map(p => p[1])) * 1.15;
+  const xy = pts.map(p => [((p[0] - (now - 3600)) / 3600 * W).toFixed(1), (H - p[1] / max * (H - 10)).toFixed(1)]);
+  const line = xy.map(p => p.join(",")).join(" ");
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Oxirgi 1 soat tezligi">
+    <polygon points="${xy[0][0]},${H} ${line} ${xy[xy.length - 1][0]},${H}" fill="var(--brand)" opacity=".12"/>
+    <polyline points="${line}" fill="none" stroke="var(--brand)" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>
+    <div class="muted" style="display:flex;justify-content:space-between"><span>1 soat oldin</span><span>eng yuqori ${fmt(max / 1.15, 2)} m/daq</span><span>hozir</span></div>`;
+}
+
+async function loadDetail() {
+  if (openId == null) return;
+  const id = openId;
+  let l;
+  try { const r = await fetch(`api/loom/${id}`, {cache: "no-store"}); l = await r.json(); } catch (e) { return; }
+  if (openId !== id) return;
+  const d = l.data || {};
+  const live = !!l.data;
+  let banner = STAT[l.status];
+  if (l.status === "stop") banner = `To'xtagan · ${dur(l.since)} dan beri · ${esc(l.reason || "sababi aniqlanmadi")}`;
+  else if (l.status === "run") banner = `Ishlayapti · ${dur(l.since)} dan beri`;
+  else if (l.status === "warn") banner = `Ishlayapti, lekin himoya o'chiq: ${esc((l.bypass || []).join(", "))}`;
+  else if (l.status === "offline") banner = `Aloqa yo'q · ${dur(l.since)} dan beri · ${esc(l.error || "")}`;
+  const P = (lab, v, u = "") => `<div class="param"><div class="l">${lab}</div><div class="v">${v}${u ? ` <small>${u}</small>` : ""}</div></div>`;
+  const si = d.shift_info || {};
+  const params = live ? [
+    P("Tezlik", fmt(d.m_hour, 1), "m/soat"),
+    P("Chastota (sozlama / haqiqiy)", `${fmt(d.hz, 0)} / ${fmt(d.hz_actual, 1)}`, "Hz"),
+    P("PPM", fmt(d.ppm)),
+    P("Smenada to'qildi", fmt(d.shift_m, 2), "m"),
+    P("Samaradorlik (panel)", fmt(d.eff_panel, 1), "%"),
+    P("Ishlash ulushi (hisob)", fmt(d.eff_calc, 1), "%"),
+    P("Smena: ishladi / to'xtadi", `${fmt(si.run_min)} / ${fmt(si.stop_min)}`, "daq"),
+    P("To'xtashlar (smena)", fmt(si.stops)),
+    P("Arqoq zichligi", fmt(d.weft_den, 1)),
+    P("Asosiy dvigatel toki", fmt(d.main_load, 1), "A"),
+    P("Umumiy metr", fmt(d.total_m, 0), "m"),
+    P("LIGHT / FAN", `${d.light ? "yoniq" : "o'chiq"} / ${d.fan ? "yoniq" : "o'chiq"}`),
+  ].join("") : "";
+  const panel = l.panel_port ? `<a class="btn" href="http://${location.hostname}:${l.panel_port}/" target="_blank" rel="noopener">Stanok sahifasi (boshqaruv) ↗</a>` : "";
+  const ev = l.events.length ? l.events.map(e => `<li><time>${esc(e.time.slice(5, 16))}</time><span class="k-${esc(e.kind)}">${e.kind === "reason" ? "Sabab: " : ""}${esc(e.event)}</span></li>`).join("")
+    : `<li class="muted">Hozircha voqea yo'q</li>`;
+  const sh = l.shifts.length ? `<div class="tablewrap"><table><thead><tr><th>Tugadi</th><th>Smena</th><th>To'qildi, m</th><th>Ishladi, daq</th><th>To'xtadi, daq</th><th>To'xtashlar</th></tr></thead><tbody>
+    ${l.shifts.map(s => `<tr><td>${esc(s.ended.slice(5, 16))}</td><td>${esc(s.shift ?? "")}</td><td>${fmt(s.metres, 1)}</td><td>${fmt(s.run_min)}</td><td>${fmt(s.stop_min)}</td><td>${fmt(s.stops)}</td></tr>`).join("")}</tbody></table></div>`
+    : `<div class="muted">Bu dasturda hali tugagan smena yozilmagan.</div>`;
+  $("#modal").innerHTML = `
+    <div class="mh"><h2>${esc(l.name)}</h2>${panel}<button class="x" aria-label="Yopish">×</button></div>
+    <div class="banner ${l.status}">${banner}</div>
+    ${live ? `<div class="params">${params}</div><h3>Oxirgi 1 soat tezligi (m/daq)</h3>${chartSVG(l.chart)}` : ""}
+    <h3>Voqealar</h3><ul class="ev">${ev}</ul>
+    <h3>Oxirgi smenalar</h3>${sh}
+    <p class="muted">Manba: ${esc(l.source || "–")}. Bu ekran faqat ko'rish uchun.</p>`;
+}
+
+/* ---------- hisobot ---------- */
+let rep = null, sortKey = "id", sortDir = 1, rdateSet = false;
+const today = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
+$("#rdate").value = today();
+function shiftDay(n) { const d = new Date($("#rdate").value + "T12:00"); d.setDate(d.getDate() + n); $("#rdate").value = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; loadReport(); }
+$("#rprev").onclick = () => shiftDay(-1); $("#rnext").onclick = () => shiftDay(1);
+$("#rdate").onchange = loadReport;
+
+const COLS = [
+  ["id", "Stanok"], ["metres", "To'qildi, m"], ["m_hour", "O'rt. tezlik, m/soat"], ["run_min", "Ishladi"],
+  ["stop_min", "To'xtadi"], ["offline_min", "Aloqa yo'q / elektr"], ["stops", "To'xtashlar"], ["eff", "Ishlash ulushi, %"], ["main_load", "Dvigatel toki, A"]];
+const hm = m => m == null ? "–" : `${Math.floor(m / 60)}:${pad(m % 60)}`;
+const th = (k, n) => `<th data-k="${k}">${n}${k === sortKey ? (sortDir > 0 ? " ▲" : " ▼") : ""}</th>`;
+
+async function loadReport() {
+  const day = $("#rdate").value || today();
+  $("#rcsv").href = `api/report.csv?date=${day}`;
+  try { const r = await fetch(`api/report?date=${day}`, {cache: "no-store"}); rep = await r.json(); } catch (e) { return; }
+  renderReport();
+}
+function renderReport() {
+  if (!rep || !rep.looms) return;
+  const t = rep.total;
+  $("#rkpis").innerHTML = [
+    ["Jami to'qildi", `${fmt(t.metres, 0)} <small>m</small>`], ["Jami ishladi", `${hm(t.run_min)} <small>soat</small>`],
+    ["Jami to'xtadi", `${hm(t.stop_min)} <small>soat</small>`], ["Aloqa yo'q / elektr", `${hm(t.offline_min)} <small>soat</small>`], ["To'xtashlar", fmt(t.stops)],
+    ["Ishlash ulushi", t.eff == null ? "–" : `${fmt(t.eff, 1)} <small>%</small>`]]
+    .map(([l, v]) => `<div class="kpi"><div class="l">${l}</div><div class="v">${v}</div></div>`).join("");
+  $("#rwin").textContent = `Ishlab chiqarish kuni: ${rep.window[0].slice(0, 16)} — ${rep.window[1].slice(0, 16)}`;
+  $("#rshifts").innerHTML = rep.shifts.map(s => `<div class="kpi"><div class="l">${esc(s.name)} · ${s.start}–${s.end}</div><div class="v">${fmt(s.metres, 0)} <small>m</small></div><div class="muted">ishladi ${hm(s.run_min)} · to'xtadi ${hm(s.stop_min)} · aloqa yo'q ${hm(s.offline_min)} · ulush ${s.eff == null ? "–" : fmt(s.eff, 1) + "%"}</div></div>`).join("");
+  const rows = [...rep.looms].sort((a, b) => {
+    const x = a[sortKey], y = b[sortKey];
+    if (x == null && y == null) return a.id - b.id;
+    if (x == null) return 1; if (y == null) return -1;
+    return (x - y) * sortDir;
+  });
+  const effCls = e => e == null ? "" : e < 60 ? "bad" : e >= 85 ? "good" : "";
+  const shTh = rep.shifts.map(s => `<th>${esc(s.name)}, m</th>`).join("");
+  $("#rtable").innerHTML = `<thead><tr>${COLS.slice(0, 2).map(([k, n]) => th(k, n)).join("")}${shTh}${COLS.slice(2).map(([k, n]) => th(k, n)).join("")}</tr></thead>
+    <tbody>${rows.map(r => `<tr><td>${esc(r.name)}</td><td>${fmt(r.metres, 1)}</td>${r.by_shift.map(b => `<td>${fmt(b.metres, 1)}</td>`).join("")}<td>${fmt(r.m_hour, 1)}</td><td>${hm(r.run_min)}</td>
+      <td>${hm(r.stop_min)}</td><td class="${r.offline_min > 0 ? "bad" : ""}">${hm(r.offline_min)}</td><td>${fmt(r.stops)}</td><td class="${effCls(r.eff)}">${fmt(r.eff, 1)}</td><td>${fmt(r.main_load, 1)}</td></tr>`).join("")}</tbody>
+    <tfoot><tr><td>Jami</td><td>${fmt(t.metres, 1)}</td>${rep.shifts.map(s => `<td>${fmt(s.metres, 1)}</td>`).join("")}<td></td><td>${hm(t.run_min)}</td><td>${hm(t.stop_min)}</td><td>${hm(t.offline_min)}</td><td>${fmt(t.stops)}</td><td>${fmt(t.eff, 1)}</td><td></td></tr></tfoot>`;
+  const mx = Math.max(1, ...rep.reasons.map(r => r.count));
+  $("#rreasons").innerHTML = rep.reasons.length ? rep.reasons.map(r => `<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between"><span>${esc(r.reason)}</span><b>${r.count}</b></div><div class="bar" style="width:${r.count / mx * 100}%"></div></div>`).join("")
+    : `<div class="muted">Bu kunda sababi aniqlangan to'xtash yo'q.</div>`;
+}
+$("#rtable").addEventListener("click", e => {
+  const h = e.target.closest("th[data-k]"); if (!h) return;
+  const k = h.dataset.k;
+  if (k === sortKey) sortDir = -sortDir; else { sortKey = k; sortDir = k === "id" ? 1 : -1; }
+  renderReport();
+});
+
+document.querySelector(".tabs").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  document.querySelectorAll(".tabs button").forEach(x => x.classList.toggle("on", x === b));
+  for (const id of ["sex", "rep", "adm"]) $("#" + id).hidden = b.dataset.tab !== id;
+  if (b.dataset.tab === "rep") loadReport();
+  if (b.dataset.tab === "adm") loadAdmin();
+});
+
+/* ---------- sozlamalar (super admin) ---------- */
+let adm = null, draft = null;
+async function api(path, body) {
+  const opt = body === undefined ? {cache: "no-store"} :
+    {method: "POST", headers: {"Content-Type": "application/json", "X-Requested-With": "fleet"}, body: JSON.stringify(body)};
+  const r = await fetch(path, opt); let j = {};
+  try { j = await r.json(); } catch (e) {}
+  return {ok: r.ok, j};
+}
+async function loadAdmin() { const {j} = await api("api/admin/state"); adm = j; draft = j.shifts ? j.shifts.map(x => ({...x})) : null; renderAdmin(); }
+function msg(t, ok) { const m = $("#adm-msg"); if (m) { m.textContent = t; m.className = "msg " + (ok ? "ok" : "err"); } }
+function renderAdmin() {
+  const box = $("#adm-body");
+  if (adm.error) { box.innerHTML = `<div class="card">${esc(adm.error)}</div>`; return; }
+  if (!adm.configured) { box.innerHTML = `<div class="card"><h3 style="margin-top:0">Super admin paroli o'rnatilmagan</h3><div class="muted">Server kompyuterida: <code>python3 ~/stanok-fleet/fleet.py --set-admin-password</code></div></div>`; return; }
+  if (!adm.logged_in) {
+    box.innerHTML = `<div class="card"><h3 style="margin-top:0">Super admin kirishi</h3>
+      <div class="row"><input type="password" id="adm-pw" placeholder="Parol" autocomplete="current-password" style="flex:1"><button class="btn primary" id="adm-login">Kirish</button></div>
+      <div class="msg" id="adm-msg"></div></div>`;
+    const go = async () => { const {ok, j} = await api("api/admin/login", {password: $("#adm-pw").value}); if (ok) { adm = j; draft = j.shifts.map(x => ({...x})); renderAdmin(); } else msg(j.error || "Xato"); };
+    $("#adm-login").onclick = go; $("#adm-pw").onkeydown = e => { if (e.key === "Enter") go(); };
+    setTimeout(() => $("#adm-pw").focus(), 30); return;
+  }
+  const endOf = i => draft.length ? draft[(i + 1) % draft.length].start : "";
+  box.innerHTML = `<div class="card"><h3 style="margin-top:0">Smenalar</h3>
+    <div class="muted" style="margin-bottom:10px">Birinchi smena ishlab chiqarish kunini boshlaydi. Har smena keyingisi boshlanganda tugaydi, shuning uchun smenalar 24 soatni to'liq qoplaydi. Tungi smena boshlangan kunga yoziladi.</div>
+    ${draft.map((s, i) => `<div class="row"><input class="nm" data-i="${i}" data-f="name" value="${esc(s.name)}" maxlength="30" aria-label="Smena nomi">
+      <input type="time" data-i="${i}" data-f="start" value="${esc(s.start)}" aria-label="Boshlanish">
+      <span class="end">→ ${esc(endOf(i))} gacha</span>
+      ${draft.length > 1 ? `<button class="btn small" data-del="${i}" aria-label="O'chirish">✕</button>` : ""}</div>`).join("")}
+    <div class="row" style="margin-top:10px">${draft.length < 4 ? `<button class="btn" id="adm-add">+ Smena qo'shish</button>` : ""}<div class="grow"></div>
+      <button class="btn" id="adm-reset">Bekor qilish</button><button class="btn primary" id="adm-save">Saqlash</button></div>
+    <div class="msg" id="adm-msg"></div>
+    <div class="muted" style="margin-top:8px">O'zgartirgandan keyin Claude'ga "smenalarimiz o'zgardi" deb ayting: Claude for Manufacturing sozlamasi ham yangilanadi.</div></div>
+  <div class="card"><h3 style="margin-top:0">Parolni o'zgartirish</h3>
+    <div class="row"><input type="password" id="pw-old" placeholder="Joriy parol" autocomplete="current-password"><input type="password" id="pw-new" placeholder="Yangi parol (kamida 8)" autocomplete="new-password"><button class="btn" id="pw-save">O'zgartirish</button></div>
+    <div class="msg" id="pw-msg"></div></div>
+  <div class="card"><h3 style="margin-top:0">O'zgarishlar jurnali</h3>
+    ${adm.log.length ? `<ul class="ev">${adm.log.map(l => `<li><time>${esc(l.time.slice(5, 16))}</time><span>${esc(l.change)} <span class="muted">(${esc(l.ip)})</span></span></li>`).join("")}</ul>` : `<div class="muted">Hali o'zgarish yo'q</div>`}
+    <div class="row" style="margin-top:10px"><div class="grow"></div><button class="btn" id="adm-out">Chiqish</button></div></div>`;
+  box.querySelectorAll("input[data-i]").forEach(inp => inp.oninput = () => { draft[+inp.dataset.i][inp.dataset.f] = inp.value; if (inp.dataset.f === "start") box.querySelectorAll(".end").forEach((e, i) => e.textContent = `→ ${endOf(i)} gacha`); });
+  box.querySelectorAll("[data-del]").forEach(b => b.onclick = () => { draft.splice(+b.dataset.del, 1); renderAdmin(); });
+  const add = $("#adm-add"); if (add) add.onclick = () => { draft.push({name: `${draft.length + 1}-smena`, start: "00:00"}); renderAdmin(); };
+  $("#adm-reset").onclick = () => { draft = adm.shifts.map(x => ({...x})); renderAdmin(); };
+  $("#adm-save").onclick = async () => {
+    const {ok, j} = await api("api/admin/shifts", {shifts: draft});
+    if (ok) { adm = j; draft = j.shifts.map(x => ({...x})); renderAdmin(); msg("Saqlandi", true); loadFleet(); } else msg(j.error || "Xato");
+  };
+  $("#pw-save").onclick = async () => {
+    const {ok, j} = await api("api/admin/password", {old: $("#pw-old").value, new: $("#pw-new").value});
+    const m = $("#pw-msg"); m.textContent = ok ? j.message : (j.error || "Xato"); m.className = "msg " + (ok ? "ok" : "err");
+    if (ok) setTimeout(loadAdmin, 1500);
+  };
+  $("#adm-out").onclick = async () => { await api("api/admin/logout", {}); loadAdmin(); };
+}
+
+loadFleet();
+setInterval(() => { loadFleet(); loadDetail(); }, 3000);
+setInterval(() => { if (!$("#rep").hidden) loadReport(); }, 60000);
+</script>
+</body>
+</html>

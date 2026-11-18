@@ -1,0 +1,19 @@
+[Unit]
+Description=Sex monitori (ko'p stanok, faqat o'qiydi)
+After=network-online.target stanok-web.service
+Wants=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=notify
+NotifyAccess=all
+ExecStart=/usr/bin/python3 -I %h/stanok-fleet/fleet.py
+Restart=always
+RestartSec=5
+WatchdogSec=180
+TimeoutStartSec=60
+StandardOutput=append:%h/stanok-fleet/fleet.log
+StandardError=append:%h/stanok-fleet/fleet.log
+
+[Install]
+WantedBy=default.target

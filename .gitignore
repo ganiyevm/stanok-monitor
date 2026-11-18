@@ -1,0 +1,13 @@
+stanok_log/
+*.log
+*.bak*
+__pycache__/
+control_pin
+web_auth
+stanok_backup/
+fleet/data/
+fleet_admin
+settings.json
+*.db
+*.db-wal
+*.db-shm
